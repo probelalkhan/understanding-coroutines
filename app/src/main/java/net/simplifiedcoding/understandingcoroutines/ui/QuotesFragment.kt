@@ -5,20 +5,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.launch
-import net.simplifiedcoding.understandingcoroutines.data.models.QuotesResponse
-import net.simplifiedcoding.understandingcoroutines.data.network.MyApi
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import net.simplifiedcoding.understandingcoroutines.databinding.FragmentQuotesBinding
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 
 class QuotesFragment : Fragment() {
 
     private val quotesAdapter by lazy { QuotesAdapter() }
     private lateinit var binding: FragmentQuotesBinding
+    private lateinit var viewModel: QuoteViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,28 +28,11 @@ class QuotesFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         binding.recyclerviewQuotes.adapter = quotesAdapter
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            getQuotes()
-        }
+        viewModel = ViewModelProvider(this).get(QuoteViewModel::class.java)
+
+        viewModel.quotes.observe(viewLifecycleOwner, Observer {
+            quotesAdapter.quotes = it
+        })
     }
 
-    private suspend fun getQuotes() {
-        val response = MyApi().getMovies()
-        quotesAdapter.quotes = response.body()?.quotes
-    }
-
-//    private fun getQuotes() {
-//        MyApi().getMovies().enqueue(object : Callback<QuotesResponse> {
-//            override fun onFailure(call: Call<QuotesResponse>, t: Throwable) {
-//                //@Todo handle failure here
-//            }
-//
-//            override fun onResponse(
-//                call: Call<QuotesResponse>,
-//                response: Response<QuotesResponse>
-//            ) {
-//                quotesAdapter.quotes = response.body()?.quotes
-//            }
-//        })
-//    }
 }

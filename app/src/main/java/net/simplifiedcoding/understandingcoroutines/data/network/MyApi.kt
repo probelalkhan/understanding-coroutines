@@ -10,7 +10,7 @@ import retrofit2.http.GET
 interface MyApi {
 
     @GET("quotes")
-    suspend fun getMovies(): Response<QuotesResponse>
+    suspend fun getQuotes(): Response<QuotesResponse>
 
 //    @GET("quotes")
 //    fun getMovies(): Call<QuotesResponse>
